@@ -14,13 +14,20 @@ def load_data(nrows):
     data.dropna(subset=['LATITUDE','LONGITUDE'],inplace =True)
     lowercase = lambda x: str(x).lower().replace(" ","_")
     data.rename(lowercase, axis ='columns', inplace=True)
-    data.rename(columns={'crash_date_crash_time':'date,time'})
+    data.rename(columns={'crash_date_crash_time':'date_time'},inplace =True)
     return data
 
 data = load_data(1000)
+
+
 st.header("Where are the most people injured in YC?")
 injured_people = st.slider("Number of Injured",0,19)
 st.map(data.query("number_of_persons_injured>= @injured_people")[['latitude','longitude']].dropna(how='any'))
+
+st.header("How many collisions occur during a given time of day?")
+hour = st.slider("Hour to look at", 0,23)
+data =  data[data["date_time"].dt.hour == hour]
+
 
 if st.checkbox("Show row Data", False):
     st.subheader('Raw Data')
